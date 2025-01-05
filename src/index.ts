@@ -15,15 +15,8 @@ connectDB();
 
 const app = express();
 const port = process.env.PORT || 3000;
-// Configure CORS
-app.use(
-  cors({
-    origin:  "*", // Replace with your frontend's URL in production
-    credentials: true, // Allow cookies and authentication headers
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-  })
-);
+app.use(cors());
+
 app.use(express.json());
 
 // Main dashboard routes
