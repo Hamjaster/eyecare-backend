@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Company, { CompanyDocument } from "../models/Company"; // Adjust path as needed
 import User, { UserDocument } from "../models/User";
 import Role from "../models/Role";
+import { hashPassword } from "../config/password";
 
 export const createCompany = async (req: any, res: Response) => {
   const adminId = req.user._id;
@@ -101,13 +102,13 @@ export const addTeamMember = async (req: any, res: Response) => {
         .json({ success: false, message: "Company not found", data: null });
       return;
     }
-
+    const hashedPass = await hashPassword(password)
     // The user details will come from req.body, and create the user with the company and the desired role
     const user = await User.create({
       firstName,
       lastName,
       email,
-      password,
+      password : hashedPass,
       role,
       company: company._id,
     });
