@@ -3,14 +3,28 @@ import { Request, Response } from "express";
 import Client, { ClientDocument } from "../models/Client";
 import { comparePassword, hashPassword } from "../config/password";
 import { generateToken } from "../config/jwt";
+import User from "../models/User";
 
 export const getAllClients = async (req: any, res: Response) => {
   const userId = req.user._id;
-  console.log(userId, "user to find clietsn for");
   try {
-    const clients = await Client.find({ onBoardedBy: userId }).populate(
-      "assignedTo referredBy onBoardedBy"
-    );
+    const user = await User.findById(userId).populate("role", "permissions").populate("company", "admin");
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found", data: null });
+      return;
+    }
+
+    const rolePermissions = user.role.permissions.find(permission => permission.category === "Clients & Leads");
+    let clients;
+
+    if (rolePermissions && rolePermissions.actions.includes("Assigned Clients & Leads Only")) {
+      clients = await Client.find({ assignedTo: userId }).populate("assignedTo referredBy onBoardedBy");
+    } else if (rolePermissions && rolePermissions.actions.includes("All clients & Leads")) {
+      clients = await Client.find({ onBoardedBy: user.company.admin }).populate("assignedTo referredBy onBoardedBy");
+    } else {
+      res.status(403).json({ success: false, message: "Insufficient permissions", data: null });
+      return;
+    }
 
     res.status(201).json({
       success: true,
@@ -18,9 +32,7 @@ export const getAllClients = async (req: any, res: Response) => {
       data: clients,
     });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ success: false, message: "Server error", data: error.message });
+    res.status(500).json({ success: false, message: "Server error", data: error.message });
   }
 };
 

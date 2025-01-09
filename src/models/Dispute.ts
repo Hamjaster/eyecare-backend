@@ -1,7 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { ReasonDocument } from "./Reason";
+import { InstructionDocument } from "./Instruction";
+import { CreditorDocument } from "./Creditor";
 
 interface BureauDetails {
-  status: "Active" | "Closed" | "Disputed";
+  status?: "Active" | "Closed" | "Disputed";
   accountName?: string;
   dateReported?: Date;
   lastActivity?: Date;
@@ -19,9 +22,9 @@ export interface DisputeItemDocument extends Document {
     Experian?: string;
     TransUnion?: string;
   };
-  creditorFurnisher: string;
-  reason: string;
-  instruction: string;
+  creditorFurnisher: CreditorDocument;
+  reason: ReasonDocument;
+  instruction: InstructionDocument;
   additionalDetails: {
     Equifax?: BureauDetails;
     Experian?: BureauDetails;
@@ -34,7 +37,6 @@ const BureauDetailsSchema = new Schema<BureauDetails>({
   status: {
     type: String,
     enum: ["Active", "Closed", "Disputed"],
-    required: true,
   },
   accountName: { type: String },
   dateReported: { type: Date },
@@ -53,9 +55,9 @@ const DisputeItemSchema = new Schema<DisputeItemDocument>({
     Experian: { type: String },
     TransUnion: { type: String },
   },
-  creditorFurnisher: { type: String, required: true },
-  reason: { type: String, required: true },
-  instruction: { type: String, required: true },
+  creditorFurnisher: { type: Schema.Types.ObjectId, ref: "Creditor", required: true },
+  reason: { type: Schema.Types.ObjectId, ref: "Reason", required: true },
+  instruction: { type: Schema.Types.ObjectId, ref: "Instruction", required: true },
   additionalDetails: {
     Equifax: { type: BureauDetailsSchema },
     Experian: { type: BureauDetailsSchema },

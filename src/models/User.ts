@@ -2,6 +2,8 @@ import mongoose, { Schema, Document } from "mongoose";
 import { RoleDocument } from "./Role";
 import { CompanyDocument } from "./Company";
 import { features } from "process";
+import { ReasonDocument } from "./Reason";
+import { InstructionDocument } from "./Instruction";
 
 interface BillingDetails {
   nameOnCard: string;
@@ -26,6 +28,8 @@ export interface UserDocument extends Document {
   role: RoleDocument; // Reference to a Role
   company: CompanyDocument; // Reference to a Company
   profilePhoto: string;
+  reasons: ReasonDocument[];
+  instructions: InstructionDocument[];
 }
 
 const UserSchema = new Schema({
@@ -46,6 +50,8 @@ const UserSchema = new Schema({
   role: { type: Schema.Types.ObjectId, ref: "Role" },
   company: { type: Schema.Types.ObjectId, ref: "Company" },
   profilePhoto: { type: String },
+  reasons: [{ type: Schema.Types.ObjectId, ref: "Reason" }],
+  instructions: [{ type: Schema.Types.ObjectId, ref: "Instruction" }],
 });
 
 export default mongoose.model<UserDocument>("User", UserSchema);

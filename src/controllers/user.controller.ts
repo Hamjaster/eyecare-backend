@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import { hashPassword, comparePassword } from "../config/password.js";
 import { generateToken } from "../config/jwt.js";
 import Company from "../models/Company.js";
+import Role, { AdminRole } from "../models/Role";
 
 export const registerUser = async (req: any, res: any) => {
   const { firstName, lastName, email, password } = req.body;
@@ -26,6 +27,7 @@ export const registerUser = async (req: any, res: any) => {
     const company = await Company.create({
       name: `${firstName} ${lastName}'s Company`,
       admin: user.id,
+      teamMembers: [user.id], // Add admin as a team member
     });
     if (!company) {
       res
@@ -39,13 +41,35 @@ export const registerUser = async (req: any, res: any) => {
     }
     user.company = company.id;
     await user.save();
+    // Creating an admin role and assigning it to user
+    const adminRole = await Role.create({
+      name: AdminRole.name,
+      permissions : AdminRole.permissions,
+      user: user.id,
+    });
+    if (!adminRole) {
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: "Failed to create admin role",
+          data: null,
+        });
+      return;
+    }
+    user.role = adminRole;
+    await user.save()
     await user.populate({
       path: "company",
       populate: {
         path: "teamMembers",
+        populate: {
+          path: "role",
+          select: "name permissions",
+        },
         select: "firstName lastName email profilePhoto",
       },
-    });
+    }).populate("role", "name permissions");
 
     res.status(201).json({
       success: true,
@@ -70,10 +94,17 @@ export const getUserDetails = async (req: any, res: any) => {
         path: "company",
         populate: {
           path: "teamMembers",
+          populate: {
+            path: "role",
+            select: "name permissions",
+          },
           select: "firstName lastName email profilePhoto",
         },
       })
+      .populate("role", "name permissions")
       .exec();
+
+      console.log('getting user deatils for', user)
 
     if (!user) {
       res
@@ -102,9 +133,14 @@ export const loginUser = async (req: any, res: any) => {
         path: "company",
         populate: {
           path: "teamMembers",
+          populate: {
+            path: "role",
+            select: "name permissions",
+          },
           select: "firstName lastName email profilePhoto",
         },
       })
+      .populate("role", "name permissions")
       .exec();
     if (user && (await comparePassword(password, user.password))) {
       res.status(200).json({
@@ -156,9 +192,13 @@ export const updateUserEmail = async (req: any, res: Response) => {
       path: "company",
       populate: {
         path: "teamMembers",
+        populate: {
+          path: "role",
+          select: "name permissions",
+        },
         select: "firstName lastName email profilePhoto",
       },
-    });
+    }).populate("role", "name permissions");
 
     res.status(200).json({
       success: true,
@@ -195,9 +235,13 @@ export const updateUserPassword = async (req: any, res: Response) => {
       path: "company",
       populate: {
         path: "teamMembers",
+        populate: {
+          path: "role",
+          select: "name permissions",
+        },
         select: "firstName lastName email profilePhoto",
       },
-    });
+    }).populate("role", "name permissions");
 
     res.status(200).json({
       success: true,
@@ -220,9 +264,13 @@ export const updateUser = async (req: any, res: Response) => {
       path: "company",
       populate: {
         path: "teamMembers",
+        populate: {
+          path: "role",
+          select: "name permissions",
+        },
         select: "firstName lastName email profilePhoto",
       },
-    });
+    }).populate("role", "name permissions");
     if (!updatedUser) {
       res
         .status(404)

@@ -10,10 +10,15 @@ import {
   getDisputeLetterById,
   updateDisputeLetter,
   deleteDisputeLetter,
+  createReason,
+  getReasons,
+  createInstruction,
+  getInstructions,
 } from "../controllers/dispute.controller";
 import { valid } from "joi";
 import validate from "../middlewares/validate";
 import { disputeItemSchema } from "../validations/disputeItem.validation";
+import { protect } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 // Dispute item routes
@@ -23,10 +28,18 @@ router.put("/updateDisputeItem/:id", updateDisputeItem);
 router.delete("/deleteDisputeItem/:id", deleteDisputeItem);
 
 // Dispute letter routes
-router.post("/addLetter", createDisputeLetter);
-router.get("/getLetters", getAllDisputeLetters);
+router.post("/addLetter", protect, createDisputeLetter);
+router.get("/getLetters", protect, getAllDisputeLetters);
 router.get("/getLetter/:id", getDisputeLetterById);
 router.put("/updateLetter/:id", updateDisputeLetter);
 router.delete("/deleteLetter/:id", deleteDisputeLetter);
+
+// Reason routes
+router.post("/addReason", protect, createReason);
+router.get("/getReasons/:userId",protect, getReasons);
+
+// Instruction routes
+router.post("/addInstruction",protect, createInstruction);
+router.get("/getInstructions/:userId",protect, getInstructions);
 
 export default router;

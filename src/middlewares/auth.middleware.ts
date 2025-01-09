@@ -26,7 +26,13 @@ export const protect = async (req: any, res: Response, next: NextFunction) => {
       } else {
         req.user = await Client.findById(decoded.id).select("-password");
       }
-      next();
+      if(!req.user){
+        res.status(401).json({success : false, message: "No such user found" });
+      }else{
+
+        console.log(req.user, 'user for auth')
+        next();
+      }
     } catch (error) {
       res.status(401).json({ message: "Not authorized, token failed" });
     }

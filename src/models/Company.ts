@@ -1,21 +1,22 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { UserDocument } from "./User";
 
 export interface CompanyDocument extends Document {
   name: string;
-  website: string;
-  mailingAddress: string;
-  city: string;
-  state: string;
-  country: string;
-  zipCode: string;
-  phone: string;
+  website?: string;
+  mailingAddress?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipCode?: string;
+  phone?: string;
   fax?: string;
-  timeZone: string;
-  senderName: string;
-  senderEmail: string;
-  companyNamePayable: string;
-  admin: mongoose.Types.ObjectId; // Reference to a User
-  teamMembers: mongoose.Types.ObjectId[]; // Array of Users
+  timeZone?: string;
+  senderName?: string;
+  senderEmail?: string;
+  companyNamePayable?: string;
+  admin: UserDocument["_id"];
+  teamMembers: UserDocument["_id"][];
 }
 
 const CompanySchema = new Schema({

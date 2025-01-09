@@ -44,7 +44,7 @@ export const createCompany = async (req: any, res: Response) => {
       senderEmail,
       companyNamePayable,
       admin: adminId,
-      teamMembers: [adminId],
+      teamMembers: [adminId], // Add admin as a team member
     });
 
     res.status(201).json({
@@ -164,11 +164,13 @@ export const editTeamMember = async (req: Request, res: Response) => {
   }
 };
 
-export const addRole = async (req: Request, res: Response) => {
+export const addRole = async (req: any, res: Response) => {
   try {
+    const userId = req.user._id;
     const { name, permissions } = req.body;
 
-    const role = await Role.create({ name, permissions });
+    const role = await Role.create({ user : userId, name, permissions });
+
     res.status(201).json({
       success: true,
       message: "Role created successfully",
@@ -181,9 +183,10 @@ export const addRole = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllRoles = async (req: Request, res: Response) => {
+export const getAllRoles = async (req: any, res: Response) => {
   try {
-    const roles = await Role.find();
+    const userId = req.user._id;
+    const roles = await Role.find({user : userId});
     res.status(200).json({
       success: true,
       message: "Roles retrieved successfully",
