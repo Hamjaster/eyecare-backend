@@ -58,18 +58,25 @@ export const registerUser = async (req: any, res: any) => {
       return;
     }
     user.role = adminRole;
+    
     await user.save()
-    await user.populate({
-      path: "company",
-      populate: {
-        path: "teamMembers",
+    await user.populate([
+      {
+        path: "company",
         populate: {
-          path: "role",
-          select: "name permissions",
+          path: "teamMembers",
+          populate: {
+            path: "role",
+            select: "name permissions",
+          },
+          select: "firstName lastName email profilePhoto",
         },
-        select: "firstName lastName email profilePhoto",
       },
-    }).populate("role", "name permissions");
+      {
+        path: "role",
+        select: "name permissions",
+      },
+    ]);
 
     res.status(201).json({
       success: true,
