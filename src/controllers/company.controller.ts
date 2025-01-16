@@ -241,7 +241,9 @@ export const updateCompanyDetails = async (req: any, res: Response) => {
     }
     const updatedCompanyDetails: CompanyDocument = req.body;
     // Update that company
-    await Company.findByIdAndUpdate(company._id, updatedCompanyDetails);
+    await Company.findByIdAndUpdate(company._id, updatedCompanyDetails, {
+      new : true
+    });
     res.status(200).json({
       success: true,
       message: "Company details updated successfully",

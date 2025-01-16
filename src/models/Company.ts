@@ -17,6 +17,29 @@ export interface CompanyDocument extends Document {
   companyNamePayable?: string;
   admin: UserDocument["_id"];
   teamMembers: UserDocument["_id"][];
+  bureauAddresses : {
+    Equifax : {
+      name : string,
+      street : string,
+      state : string,
+      city : string,
+      zip : string
+    },
+    Experian : {
+      name : string,
+      street : string,
+      state : string,
+      city : string,
+      zip : string
+    },
+    TransUnion : {
+      name : string,
+      street : string,
+      state : string,
+      city : string,
+      zip : string
+    },
+  }
 }
 
 const CompanySchema = new Schema({
@@ -36,6 +59,29 @@ const CompanySchema = new Schema({
   companyNamePayable: { type: String },
   admin: { type: Schema.Types.ObjectId, ref: "User", required: true },
   teamMembers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  bureauAddresses : {
+    Equifax : {
+      name : { type: String, required: true, default : "Equifax" },
+      street : { type: String, default : "10"},
+      state : { type: String, default : "Florida"},
+      city : { type: String, default : "Alarado"},
+      zip : { type: String, default : "47040"}
+    },
+    Experian : {
+      name : { type: String, required: true , default : "Experian"},
+      street : { type: String, default : "10"},
+      state : { type: String, default : "Florida"},
+      city : { type: String, default : "Alarado"},
+      zip : { type: String, default : "47040"}
+    },
+    TransUnion : {
+      name : { type: String, required: true, default : 'TransUnion' },
+      street : { type: String, default : "10"},
+      state : { type: String, default : "Florida"},
+      city : { type: String, default : "Alarado"},
+      zip : { type: String, default : "47040"}
+    },
+  }
 });
 
 export default mongoose.model<CompanyDocument>("Company", CompanySchema);

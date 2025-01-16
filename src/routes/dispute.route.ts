@@ -14,6 +14,7 @@ import {
   getReasons,
   createInstruction,
   getInstructions,
+  getAllRAWLetters,
 } from "../controllers/dispute.controller";
 import { valid } from "joi";
 import validate from "../middlewares/validate";
@@ -29,7 +30,8 @@ router.delete("/deleteDisputeItem/:id", deleteDisputeItem);
 
 // Dispute letter routes
 router.post("/addLetter", protect, createDisputeLetter);
-router.get("/getLetters", protect, getAllDisputeLetters);
+router.get("/getDisputeLetters", protect, getAllDisputeLetters);
+router.get("/getRawLetters", protect, getAllRAWLetters);
 router.get("/getLetter/:id", getDisputeLetterById);
 router.put("/updateLetter/:id", updateDisputeLetter);
 router.delete("/deleteLetter/:id", deleteDisputeLetter);

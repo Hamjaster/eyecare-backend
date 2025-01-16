@@ -139,7 +139,7 @@ export const deleteDisputeItem = async (req: Request, res: Response) => {
 export const createDisputeLetter = async (req: any, res: Response) => {
   try {
     const userId = req.user._id;
-    const { title, category, status, description, bureau } = req.body;
+    const { title, category, status, description, bureau, isDisputeLetter, createdAt } = req.body;
 
     const newDisputeLetter = await DisputeLetter.create({
       title,
@@ -147,7 +147,9 @@ export const createDisputeLetter = async (req: any, res: Response) => {
       status,
       user : userId,
       description,
-      bureau
+      bureau,
+      isDisputeLetter,
+      createdAt
     });
 
     res.status(201).json({
@@ -168,13 +170,42 @@ export const createDisputeLetter = async (req: any, res: Response) => {
 export const getAllDisputeLetters = async (req: any, res: Response) => {
   try {
     const userId = req.user._id
-    const disputeLetters = await DisputeLetter.find({ user : userId}).populate("user");
+    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : true}).populate("user");
     console.log(disputeLetters)
     if(!disputeLetters){
       res.status(400).json({
         success: false,
         data: disputeLetters,
         message: "Error fetching dispute letters",
+      });
+return;
+    }
+    res.status(200).json({
+      success: true,
+      data: disputeLetters,
+      message: "Fetched all dispute letters successfully",
+    });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      success: false,
+      data: null,
+      message: "Error fetching dispute letters",
+    });
+  }
+};
+
+// Get all raw letters
+export const getAllRAWLetters = async (req: any, res: Response) => {
+  try {
+    const userId = req.user._id
+    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : false}).populate("user");
+    console.log(disputeLetters)
+    if(!disputeLetters){
+      res.status(400).json({
+        success: false,
+        data: disputeLetters,
+        message: "Error fetching letters",
       });
 return;
     }
