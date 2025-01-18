@@ -5,6 +5,7 @@ export interface ClientDocument extends Document {
   firstName: string;
   middleName?: string;
   lastName: string;
+  profilePhoto?: string;
   email: string;
   password: string;
   last4SSN: string;
@@ -22,6 +23,9 @@ export interface ClientDocument extends Document {
   assignedTo: UserDocument;
   referredBy: UserDocument;
   onBoardedBy: UserDocument;
+  signature : {text:string, font : string};
+  photoId ?: string;
+  proofOfAddress ?: string;
 }
 
 const ClientSchema = new Schema({
@@ -30,7 +34,14 @@ const ClientSchema = new Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  signature : {
+    text : {type : String},
+    font : {type : String}
+  },
+  photoId : {type : String},
+  proofOfAddress : {type : String},
   last4SSN: { type: String },
+  profilePhoto: { type: String },
   dateOfBirth: { type: Date },
   mailingAddress: { type: String },
   country: { type: String },

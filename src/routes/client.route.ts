@@ -3,10 +3,13 @@ import express from "express";
 import {
   deleteClient,
   getAllClients,
+  getClientDetails,
   loginClient,
   onboardClient,
   onboardClientsBulk,
   updateClient,
+  updateClientEmail,
+  updateClientPassword,
 } from "../controllers/client.controller";
 import { protect } from "../middlewares/auth.middleware";
 import validate from "../middlewares/validate";
@@ -24,8 +27,11 @@ router.post(
   onboardClientsBulk
 );
 router.get("/getAllClients", protect, getAllClients);
+router.get("/userDetails", protect, getClientDetails);
 router.post("/login", loginClient);
-router.put("/update/:id", updateClient);
+router.put("/update", protect, updateClient);
 router.delete("/delete/:id", protect, deleteClient);
+router.put("/changeEmail", protect, updateClientEmail);
+router.put("/changePassword", protect, updateClientPassword);
 
 export default router;

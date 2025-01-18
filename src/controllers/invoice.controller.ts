@@ -45,9 +45,11 @@ export const createInvoice = async (req: any, res: Response) => {
 export const getInvoicesByClient = async (req: any, res: Response) => {
   const clientId = req.user._id;
   try {
-    const invoices = await Invoice.find({ client: clientId }).populate(
-      "invoiceBy"
-    );
+    const invoices = await Invoice.find({ client: clientId })
+      .populate({
+        path: "invoiceBy",
+        populate: { path: "company" }
+      }).populate('client');
     res.status(200).json({
       success: true,
       message: "Invoices retrieved successfully",
@@ -87,7 +89,10 @@ export const updateInvoice = async (req: Request, res: Response) => {
   try {
     const updatedInvoice = await Invoice.findByIdAndUpdate(id, req.body, {
       new: true,
-    });
+    }) .populate({
+      path: "invoiceBy",
+      populate: { path: "company" }
+    }).populate('client');;
     if (!updatedInvoice) {
       res
         .status(404)

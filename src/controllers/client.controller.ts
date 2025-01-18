@@ -5,6 +5,32 @@ import { comparePassword, hashPassword } from "../config/password";
 import { generateToken } from "../config/jwt";
 import User from "../models/User";
 
+export const getClientDetails = async (req: any, res: any) => {
+  const userId = req.user._id;
+  try {
+    const user = await Client.findById(userId).populate('referredBy')
+
+      console.log('getting user deatils for', user)
+
+    if (!user) {
+      res
+        .status(500)
+        .json({ success: false, message: "No such user found", data: null });
+      return;
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "User retrieved successfully",
+      data: user,
+    });
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", data: error.message });
+  }
+};
+
 export const getAllClients = async (req: any, res: Response) => {
   const userId = req.user._id;
   try {
@@ -54,6 +80,10 @@ export const onboardClient = async (req: any, res: Response) => {
       ...body,
       password: hashedPassword,
       onBoardedBy: userId,
+      signature : {
+        text : `${body.firstName} ${body.lastName}`,
+        font : "font-dancing"
+      }
     });
 
     // Return client after populating referenced fields
@@ -151,11 +181,11 @@ export const deleteClient = async (req: Request, res: Response) => {
 };
 
 export const updateClient = async (req: any, res: Response) => {
-  const { id } = req.params;
+const id = req.user._id
   try {
     const updatedClient = await Client.findByIdAndUpdate(id, req.body, {
       new: true,
-    });
+    }).populate('referredBy');
     if (!updatedClient) {
       res
         .status(404)
@@ -177,16 +207,13 @@ export const updateClient = async (req: any, res: Response) => {
 export const loginClient = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
-    const client = await Client.findOne({ email });
+    const client = await Client.findOne({ email }).populate('referredBy');
     if (client && (await comparePassword(password, client.password))) {
       res.status(200).json({
         success: true,
         message: "Login successful",
         data: {
-          _id: client.id,
-          firstName: client.firstName,
-          lastName: client.lastName,
-          email: client.email,
+          user : client,
           token: generateToken(client.id, "client"),
         },
       });
@@ -208,23 +235,30 @@ export const loginClient = async (req: Request, res: Response) => {
 
 export const updateClientEmail = async (req: any, res: Response) => {
   const id = req.user._id;
-  const { email } = req.body;
+  const { password, email } = req.body;
 
   try {
-    const client = await Client.findById(id);
-    if (!client) {
+    const user = await Client.findById(id).populate('referredBy');
+    if (!user) {
       res
         .status(404)
-        .json({ success: false, message: "Client not found", data: null });
+        .json({ success: false, message: "User not found", data: null });
+      return;
+    }
+    if (!(await comparePassword(password, user.password))) {
+      res
+        .status(401)
+        .json({ success: false, message: "Invalid password", data: null });
       return;
     }
 
-    client.email = email;
-    await client.save();
+    user.email = email;
+    await user.save();
+
     res.status(200).json({
       success: true,
       message: "Email updated successfully",
-      data: { email: client.email },
+      data: { email: user.email },
     });
   } catch (error: any) {
     res
@@ -233,13 +267,14 @@ export const updateClientEmail = async (req: any, res: Response) => {
   }
 };
 
+
 export const updateClientPassword = async (req: any, res: Response) => {
   const id = req.user._id;
   const { currentPassword, newPassword } = req.body;
 
   try {
-    const client = await Client.findById(id);
-    if (!client || !(await comparePassword(currentPassword, client.password))) {
+    const user = await Client.findById(id);
+    if (!user || !(await comparePassword(currentPassword, user.password))) {
       res
         .status(401)
         .json({
@@ -250,8 +285,9 @@ export const updateClientPassword = async (req: any, res: Response) => {
       return;
     }
 
-    client.password = await hashPassword(newPassword);
-    await client.save();
+    user.password = await hashPassword(newPassword);
+    await user.save();
+
     res.status(200).json({
       success: true,
       message: "Password updated successfully",
