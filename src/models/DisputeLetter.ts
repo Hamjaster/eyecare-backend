@@ -1,9 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { UserDocument } from "./User";
+import { CategoryDocument } from "./Category";
 
 export interface DisputeLetter extends Document {
   title: string; // New field
-  category: string; // New field
+  category: CategoryDocument; // New field
   status: string; // New field
   description: string;
   bureau : string;
@@ -15,7 +16,7 @@ export interface DisputeLetter extends Document {
 
 const DisputeLetterSchema = new Schema<DisputeLetter>({
   title: { type: String, required: true }, // New field
-  category: { type: String }, // New field
+  category: { type: Schema.Types.ObjectId, ref: "Category" }, // New field
   status: { type: String, required: true }, // New field
   description: { type: String, required: true },
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },

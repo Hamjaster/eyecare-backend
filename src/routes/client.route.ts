@@ -8,6 +8,7 @@ import {
   onboardClient,
   onboardClientsBulk,
   updateClient,
+  updateClientByAdmin,
   updateClientEmail,
   updateClientPassword,
 } from "../controllers/client.controller";
@@ -30,6 +31,7 @@ router.get("/getAllClients", protect, getAllClients);
 router.get("/userDetails", protect, getClientDetails);
 router.post("/login", loginClient);
 router.put("/update", protect, updateClient);
+router.put("/update/:id", updateClientByAdmin);
 router.delete("/delete/:id", protect, deleteClient);
 router.put("/changeEmail", protect, updateClientEmail);
 router.put("/changePassword", protect, updateClientPassword);

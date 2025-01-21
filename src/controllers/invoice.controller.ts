@@ -69,7 +69,7 @@ export const getInvoicesByUser = async (req: any, res: Response) => {
   try {
     const invoices = await Invoice.find({ invoiceBy: userId }).populate(
       "invoiceBy"
-    );
+    ).populate('client');
     res.status(200).json({
       success: true,
       message: "Invoices retrieved successfully",

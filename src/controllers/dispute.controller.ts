@@ -3,6 +3,7 @@ import DisputeItem from "../models/Dispute";
 import DisputeLetter from "../models/DisputeLetter";
 import Reason from "../models/Reason";
 import Instruction from "../models/Instruction";
+import Category from "../models/Category";
 
 // Create a Dispute Item
 export const createDisputeItem = async (req: Request, res: Response) => {
@@ -38,7 +39,9 @@ export const getAllDisputeItems = async (req: Request, res: Response) => {
     const { clientId } = req.params;
     const disputeItems = await DisputeItem.find({
       forClient: clientId,
-    }).populate("forClient reason instruction creditorFurnisher");
+    })
+    .populate("forClient reason instruction creditorFurnisher")
+    .sort({ createdAt: -1 }); // Sort by createdAt in ascending order
     res.status(200).json({
       success: true,
       message: "Dispute items retrieved successfully",
@@ -151,7 +154,7 @@ export const createDisputeLetter = async (req: any, res: Response) => {
       isDisputeLetter,
       createdAt
     });
-
+    await newDisputeLetter.populate('category')
     res.status(201).json({
       success: true,
       data: newDisputeLetter,
@@ -170,7 +173,11 @@ export const createDisputeLetter = async (req: any, res: Response) => {
 export const getAllDisputeLetters = async (req: any, res: Response) => {
   try {
     const userId = req.user._id
-    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : true}).populate("user");
+    const {status} = req.body;
+
+    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : true, status})
+      .populate("user")
+      .sort({ createdAt: -1 }); // Sort by createdAt in ascending order
     console.log(disputeLetters)
     if(!disputeLetters){
       res.status(400).json({
@@ -199,7 +206,10 @@ return;
 export const getAllRAWLetters = async (req: any, res: Response) => {
   try {
     const userId = req.user._id
-    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : false}).populate("user");
+    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : false})
+      .populate("user")
+      .populate('category')
+      .sort({ createdAt: -1 }); // Sort by createdAt in ascending order
     console.log(disputeLetters)
     if(!disputeLetters){
       res.status(400).json({
@@ -380,6 +390,41 @@ export const getInstructions = async (req: any, res: Response) => {
       success: true,
       message: "Instructions retrieved successfully",
       data: instructions,
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message, data: null });
+  }
+};
+
+// Create an Instruction
+export const createCategory = async (req: any, res: Response) => {
+  
+  try {
+    const userId = req.user._id
+    const {category} = req.body;
+    const ins = await Category.create({
+      user : userId,
+      category 
+    });
+    res.status(201).json({
+      success: true,
+      message: "Category created successfully",
+      data: ins,
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message, data: null });
+  }
+};
+
+// Get Instructions for a User
+export const getCategories = async (req: any, res: Response) => {
+  try {
+    const userId = req.user._id;
+    const categories = await Category.find({ user: userId });
+    res.status(200).json({
+      success: true,
+      message: "Categories retrieved successfully",
+      data: categories,
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message, data: null });

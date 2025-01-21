@@ -204,6 +204,30 @@ const id = req.user._id
   }
 };
 
+export const updateClientByAdmin = async (req: any, res: Response) => {
+const {id} = req.params
+  try {
+    const updatedClient = await Client. findByIdAndUpdate(id, req.body, {
+      new: true,
+    }).populate('referredBy');
+    if (!updatedClient) {
+      res
+        .status(404)
+        .json({ success: false, message: "Client not found", data: null });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      message: "Client updated successfully",
+      data: updatedClient,
+    });
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", data: error.message });
+  }
+};
+
 export const loginClient = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
