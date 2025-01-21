@@ -36,7 +36,7 @@ export interface DisputeItemDocument extends Document {
 const BureauDetailsSchema = new Schema<BureauDetails>({
   status: {
     type: String,
-    enum: ["Active", "Closed", "Disputed"],
+    enum: ["Positive", "Negative", "Repaired", "Deleted", "In Dispute", "Verified", "Updated", "Unspecified"],
   },
   accountName: { type: String },
   dateReported: { type: Date },
