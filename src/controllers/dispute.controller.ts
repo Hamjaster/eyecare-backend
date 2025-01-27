@@ -3,7 +3,6 @@ import DisputeItem from "../models/Dispute";
 import DisputeLetter from "../models/DisputeLetter";
 import Reason from "../models/Reason";
 import Instruction from "../models/Instruction";
-import Category from "../models/Category";
 
 // Create a Dispute Item
 export const createDisputeItem = async (req: Request, res: Response) => {
@@ -138,195 +137,6 @@ export const deleteDisputeItem = async (req: Request, res: Response) => {
   }
 };
 
-// Create a new dispute letter
-export const createDisputeLetter = async (req: any, res: Response) => {
-  try {
-    const userId = req.user._id;
-    const { title, category, status, description, bureau, isDisputeLetter, createdAt } = req.body;
-
-    const newDisputeLetter = await DisputeLetter.create({
-      title,
-      category,
-      status,
-      user : userId,
-      description,
-      bureau,
-      isDisputeLetter,
-      createdAt
-    });
-    await newDisputeLetter.populate('category')
-    res.status(201).json({
-      success: true,
-      data: newDisputeLetter,
-      message: "Dispute letter created successfully",
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      data: error,
-      message: "Error creating dispute letter",
-    });
-  }
-};
-
-// Get all dispute letters
-export const getAllDisputeLetters = async (req: any, res: Response) => {
-  try {
-    const userId = req.user._id
-    const {status} = req.body;
-
-    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : true, status})
-      .populate("user")
-      .sort({ createdAt: -1 }); // Sort by createdAt in ascending order
-    console.log(disputeLetters)
-    if(!disputeLetters){
-      res.status(400).json({
-        success: false,
-        data: disputeLetters,
-        message: "Error fetching dispute letters",
-      });
-return;
-    }
-    res.status(200).json({
-      success: true,
-      data: disputeLetters,
-      message: "Fetched all dispute letters successfully",
-    });
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      success: false,
-      data: null,
-      message: "Error fetching dispute letters",
-    });
-  }
-};
-
-// Get all raw letters
-export const getAllRAWLetters = async (req: any, res: Response) => {
-  try {
-    const userId = req.user._id
-    const disputeLetters = await DisputeLetter.find({ user : userId, isDisputeLetter : false})
-      .populate("user")
-      .populate('category')
-      .sort({ createdAt: -1 }); // Sort by createdAt in ascending order
-    console.log(disputeLetters)
-    if(!disputeLetters){
-      res.status(400).json({
-        success: false,
-        data: disputeLetters,
-        message: "Error fetching letters",
-      });
-return;
-    }
-    res.status(200).json({
-      success: true,
-      data: disputeLetters,
-      message: "Fetched all dispute letters successfully",
-    });
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      success: false,
-      data: null,
-      message: "Error fetching dispute letters",
-    });
-  }
-};
-
-// Get a single dispute letter by ID
-export const getDisputeLetterById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const disputeLetter = await DisputeLetter.findById(id).populate(
-      "user"
-    );
-    if (!disputeLetter) {
-      res.status(404).json({
-        success: false,
-        data: null,
-        message: "Dispute letter not found",
-      });
-      return;
-    }
-    res.status(200).json({
-      success: true,
-      data: disputeLetter,
-      message: "Fetched dispute letter successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      data: null,
-      message: "Error fetching dispute letter",
-    });
-  }
-};
-
-// Update a dispute letter
-export const updateDisputeLetter = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { title, category, status, description, bureau } = req.body;
-
-    const updatedDisputeLetter = await DisputeLetter.findByIdAndUpdate(
-      id,
-      { title, category, status, description, bureau },
-      { new: true, runValidators: true }
-    ).populate('user');
-
-    if (!updatedDisputeLetter) {
-      res.status(404).json({
-        success: false,
-        data: null,
-        message: "Dispute letter not found",
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      data: updatedDisputeLetter,
-      message: "Dispute letter updated successfully",
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      data: null,
-      message: "Error updating dispute letter",
-    });
-  }
-};
-
-// Delete a dispute letter
-export const deleteDisputeLetter = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const deletedDisputeLetter = await DisputeLetter.findByIdAndDelete(id);
-
-    if (!deletedDisputeLetter) {
-      res.status(404).json({
-        success: false,
-        data: null,
-        message: "Dispute letter not found",
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      data: null,
-      message: "Dispute letter deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      data: null,
-      message: "Error deleting dispute letter",
-    });
-  }
-};
-
 // Create a Reason
 export const createReason = async (req: any, res: Response) => {
   try {
@@ -376,7 +186,7 @@ export const createInstruction = async (req: any, res: Response) => {
       message: "Instruction created successfully",
       data: ins,
     });
-  } catch (error: any) {
+  } catch (error: any) {  
     res.status(400).json({ success: false, message: error.message, data: null });
   }
 };
@@ -390,41 +200,6 @@ export const getInstructions = async (req: any, res: Response) => {
       success: true,
       message: "Instructions retrieved successfully",
       data: instructions,
-    });
-  } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message, data: null });
-  }
-};
-
-// Create an Instruction
-export const createCategory = async (req: any, res: Response) => {
-  
-  try {
-    const userId = req.user._id
-    const {category} = req.body;
-    const ins = await Category.create({
-      user : userId,
-      category 
-    });
-    res.status(201).json({
-      success: true,
-      message: "Category created successfully",
-      data: ins,
-    });
-  } catch (error: any) {
-    res.status(400).json({ success: false, message: error.message, data: null });
-  }
-};
-
-// Get Instructions for a User
-export const getCategories = async (req: any, res: Response) => {
-  try {
-    const userId = req.user._id;
-    const categories = await Category.find({ user: userId });
-    res.status(200).json({
-      success: true,
-      message: "Categories retrieved successfully",
-      data: categories,
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message, data: null });

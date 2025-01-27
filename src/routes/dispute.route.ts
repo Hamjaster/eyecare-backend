@@ -5,19 +5,24 @@ import {
   getDisputeItemById,
   updateDisputeItem,
   deleteDisputeItem,
-  createDisputeLetter,
-  getAllDisputeLetters,
-  getDisputeLetterById,
-  updateDisputeLetter,
-  deleteDisputeLetter,
   createReason,
   getReasons,
   createInstruction,
   getInstructions,
+} from "../controllers/dispute.controller";
+import {
+  createDisputeLetter,
+  getAllDisputeLetters,
+  getDisputeLetterById,
+  updateDisputeLetter,
   getAllRAWLetters,
   createCategory,
   getCategories,
-} from "../controllers/dispute.controller";
+  deleteDisputeLetter,
+  getAllLetterTemplates,
+  createTemplate,
+  updateTemplate,
+  deleteTemplate,} from '../controllers/letter.controller'
 import { valid } from "joi";
 import validate from "../middlewares/validate";
 import { disputeItemSchema } from "../validations/disputeItem.validation";
@@ -30,10 +35,15 @@ router.get("/getDisputeItems/:clientId", getAllDisputeItems);
 router.put("/updateDisputeItem/:id", updateDisputeItem);
 router.delete("/deleteDisputeItem/:id", deleteDisputeItem);
 
-// Dispute letter routes
+// letter templates routes
+router.get("/getLetterTemplates", protect, getAllLetterTemplates);
+router.post("/addLetterTemplate", protect, createTemplate);
+router.put("/updateTemplate/:id", protect, updateTemplate); // Update a template
+router.delete("/deleteTemplate/:id", protect, deleteTemplate); // Delete a template
+
+// dispute letter routes
 router.post("/addLetter", protect, createDisputeLetter);
 router.post("/getDisputeLetters", protect, getAllDisputeLetters);
-router.get("/getRawLetters", protect, getAllRAWLetters);
 router.get("/getLetter/:id", getDisputeLetterById);
 router.put("/updateLetter/:id", updateDisputeLetter);
 router.delete("/deleteLetter/:id", deleteDisputeLetter);

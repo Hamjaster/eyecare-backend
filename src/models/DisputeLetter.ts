@@ -8,10 +8,14 @@ export interface DisputeLetter extends Document {
   status: string; // New field
   description: string;
   bureau : string;
+  attachedDoc : string;
   createdAt : Date;
   user : UserDocument;
   document ?: any
   isDisputeLetter : boolean;
+  isPopulatedWithDocs : boolean;
+  isPopulatedWithAttachment : boolean;
+  round : string;
 }
 
 const DisputeLetterSchema = new Schema<DisputeLetter>({
@@ -23,7 +27,11 @@ const DisputeLetterSchema = new Schema<DisputeLetter>({
   bureau : {type : String},
   createdAt : {type : Date, default : new Date()},
   document : {type : Object},
-  isDisputeLetter : {type : Boolean, required : true}
+  isPopulatedWithDocs : {type : Boolean, default : false},
+  isPopulatedWithAttachment : {type : Boolean, default : false},
+  attachedDoc : {type :String},
+  isDisputeLetter : {type : Boolean, required : true},
+  round : {type : String}
 });
 
 export default mongoose.model<DisputeLetter>(
