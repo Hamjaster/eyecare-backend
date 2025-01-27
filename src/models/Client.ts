@@ -23,7 +23,7 @@ export interface ClientDocument extends Document {
   assignedTo: UserDocument;
   referredBy: UserDocument;
   onBoardedBy: UserDocument;
-  signature : {text:string, font : string};
+  signature : {text:string, font : string, image : string};
   photoId ?: string;
   proofOfAddress ?: string;
 }
@@ -36,7 +36,8 @@ const ClientSchema = new Schema({
   password: { type: String, required: true },
   signature : {
     text : {type : String},
-    font : {type : String}
+    font : {type : String},
+    image : {type : String}
   },
   photoId : {type : String},
   proofOfAddress : {type : String},
