@@ -44,9 +44,19 @@ export const getAllClients = async (req: any, res: Response) => {
     let clients;
 
     if (rolePermissions && rolePermissions.actions.includes("Assigned Clients & Leads Only")) {
-      clients = await Client.find({ assignedTo: userId }).populate("assignedTo referredBy onBoardedBy");
+      clients = await Client.find({ assignedTo: userId })
+        .populate("assignedTo referredBy onBoardedBy")
+        .populate({
+          path: "assignedTo",
+          populate: { path: "company" }
+        });
     } else if (rolePermissions && rolePermissions.actions.includes("All clients & Leads")) {
-      clients = await Client.find({ onBoardedBy: user.company.admin }).populate("assignedTo referredBy onBoardedBy");
+      clients = await Client.find({ onBoardedBy: user.company.admin })
+        .populate("assignedTo referredBy onBoardedBy")
+        .populate({
+          path: "assignedTo",
+          populate: { path: "company" }
+        });
     } else {
       res.status(403).json({ success: false, message: "Insufficient permissions", data: null });
       return;
