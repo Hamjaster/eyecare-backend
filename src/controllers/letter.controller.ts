@@ -5,16 +5,13 @@ import LetterTemplate from "../models/LetterTemplate";
 // Create a new letter template
 export const createTemplate = async (req: any, res: any) => {
   try {
-    const { title,  content, category, status } = req.body;
+    const letterTemplateDetails = req.body;
     const user = req.user.id; // Assuming user is authenticated
-
+    console.log(letterTemplateDetails, 'template')
     const template = new LetterTemplate({
-      title,
-      
-      content,
-      category,
-      user,
-      status
+      ...letterTemplateDetails,
+      user
+   
     });
 
     
