@@ -6,7 +6,7 @@ export interface ReasonDocument extends Document {
 }
 
 const ReasonSchema = new Schema<ReasonDocument>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "user", required: true },
   reason: { type: String, required: true },
 });
 

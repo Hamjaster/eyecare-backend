@@ -4,7 +4,7 @@ import User from "../models/User";
 import { Request, Response, NextFunction } from "express";
 import Client from "../models/Client";
 
-interface DecodedToken {
+export interface DecodedToken {
   id: string;
   userType: "user" | "client";
 }

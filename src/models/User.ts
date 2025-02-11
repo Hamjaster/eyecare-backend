@@ -31,7 +31,6 @@ export interface UserDocument extends Document {
   reasons: ReasonDocument[];
   instructions: InstructionDocument[];
 }
-
 const UserSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -54,4 +53,4 @@ const UserSchema = new Schema({
   instructions: [{ type: Schema.Types.ObjectId, ref: "Instruction" }],
 });
 
-export default mongoose.model<UserDocument>("User", UserSchema);
+export default mongoose.model<UserDocument>("user", UserSchema);

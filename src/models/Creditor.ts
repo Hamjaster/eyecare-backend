@@ -17,7 +17,7 @@ const CreditorSchema: Schema = new Schema(
     email: { type: String, required: true },
     phone: { type: String },
     address: { type: String },
-    user: { type: mongoose.Types.ObjectId, ref: "User", required: false },
+    user: { type: mongoose.Types.ObjectId, ref: "user", required: false },
     companyName: { type: String, required: true },
     accountType: { type: String, required: true },
     notes: { type: String, required: false },

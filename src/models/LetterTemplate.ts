@@ -19,7 +19,7 @@ const LetterTemplateSchema = new Schema<LetterTemplateDocument>(
     content: { type: String, required: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     status: { type: String },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "user", required: true },
     letterTemplate : {type : String},
     isDefaultTemplate : {type : Boolean, default : true}
   },

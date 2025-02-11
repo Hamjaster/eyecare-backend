@@ -6,7 +6,7 @@ export interface CategoryDocument extends Document {
 }
 
 const CategorySchema = new Schema<CategoryDocument>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "user", required: true },
   category: { type: String, required: true },
 });
 

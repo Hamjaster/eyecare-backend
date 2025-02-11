@@ -57,8 +57,8 @@ const CompanySchema = new Schema({
   senderName: { type: String },
   senderEmail: { type: String },
   companyNamePayable: { type: String },
-  admin: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  teamMembers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  admin: { type: Schema.Types.ObjectId, ref: "user", required: true },
+  teamMembers: [{ type: Schema.Types.ObjectId, ref: "user" }],
   bureauAddresses : {
     Equifax : {
       name : { type: String, required: true, default : "Equifax" },

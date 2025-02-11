@@ -11,6 +11,7 @@ import {
   updateCompanyDetails,
 } from "../controllers/company.controller";
 import { protect } from "../middlewares/auth.middleware";
+import { createTask, deleteTask, getTasksByClient } from "../controllers/task.controller";
 
 const router = Router();
 
@@ -21,5 +22,10 @@ router.put("/role/edit", protect, editRole);
 router.get("/roles", protect, getAllRoles);
 router.get("/team", protect, getTeamMembers);
 router.post("/updateCompany", protect, updateCompanyDetails);
+
+// Tasks routes 
+router.get("/client/:clientId", protect, getTasksByClient);
+router.post("/", protect, createTask);
+router.delete("/:taskId", protect, deleteTask);
 
 export default router;

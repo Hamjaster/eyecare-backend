@@ -8,8 +8,9 @@ import creditorRoutes from "../src/routes/creditor.route";
 import companyRoutes from "../src/routes/company.route";
 import disputeRoutes from "../src/routes/dispute.route";
 import connectDB from "./config/db";
-
+import http from "http";
 import cors from "cors"; // Import the CORS middleware
+import { initSocket } from "./config/sockets";
 dotenv.config();
 connectDB();
 
@@ -31,6 +32,14 @@ app.get("/", (req, res) => {
   res.send("Express + TypeScript Server");
 });
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+let server: any;
+
+// Create an HTTP server instance
+const httpServer = http.createServer(app);
+
+server = httpServer.listen(port, () => {
+  console.log(`Listening to port ${port}`);
 });
+
+ // Initialize Socket.IO
+ initSocket(httpServer);

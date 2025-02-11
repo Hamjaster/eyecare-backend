@@ -17,12 +17,12 @@ export interface InvoiceDocument extends Document {
 const InvoiceSchema = new Schema({
   client: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Client",
+    ref: "client",
     required: true,
   },
   invoiceBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "user",
     required: true,
   },
   referenceNo: { type: String },

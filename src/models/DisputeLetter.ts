@@ -23,7 +23,7 @@ const DisputeLetterSchema = new Schema<DisputeLetter>({
   category: { type: Schema.Types.ObjectId, ref: "Category" }, // New field
   status: { type: String, required: true }, // New field
   description: { type: String, required: true },
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "user", required: true },
   bureau : {type : String},
   createdAt : {type : Date, default : new Date()},
   document : {type : Object},

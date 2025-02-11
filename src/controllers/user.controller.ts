@@ -111,7 +111,6 @@ export const getUserDetails = async (req: any, res: any) => {
       .populate("role", "name permissions")
       .exec();
 
-      console.log('getting user deatils for', user)
 
     if (!user) {
       res

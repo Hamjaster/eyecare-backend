@@ -4,13 +4,24 @@ import Client, { ClientDocument } from "../models/Client";
 import { comparePassword, hashPassword } from "../config/password";
 import { generateToken } from "../config/jwt";
 import User from "../models/User";
-
+import mongoose from "mongoose";
+import { parseCreditReport } from "../config/config";
+import fs from 'fs/promises'
 export const getClientDetails = async (req: any, res: any) => {
   const userId = req.user._id;
   try {
-    const user = await Client.findById(userId).populate('referredBy')
+    const user = await Client.findById(userId).populate({
+      path: "onBoardedBy",
+      populate: {
+        path: "company", // Populate the company of the assigned user
+        populate: {
+          path: "teamMembers", // Then populate the teamMembers in the company
+        },
+      },
+    })
+    .populate("referredBy") // Optionally populate other user references
+    .populate("assignedTo");
 
-      console.log('getting user deatils for', user)
 
     if (!user) {
       res
@@ -219,7 +230,19 @@ const {id} = req.params
   try {
     const updatedClient = await Client. findByIdAndUpdate(id, req.body, {
       new: true,
-    }).populate('referredBy');
+    }).populate('referredBy') .populate({
+      path: "assignedTo",
+      model: "user",
+      populate : {
+        path : "company",
+        model : "Company",
+        populate : {
+          path : "teamMembers",
+          model : 'user'
+        }
+      }
+    })
+    
     if (!updatedClient) {
       res
         .status(404)
@@ -333,3 +356,73 @@ export const updateClientPassword = async (req: any, res: Response) => {
       .json({ success: false, message: "Server error", data: error.message });
   }
 };
+
+export const addTaskToClient = async (req: Request, res: Response) => {
+  try {
+    const { clientId, task } = req.body;
+
+    if (!clientId || !task) {
+      return res.status(400).json({ success : false, message: "Client ID and task are required" });
+    }
+
+    const client = await Client.findById(clientId);
+    if (!client) {
+      return res.status(404).json({ success : false, message: "Client not found" });
+    }
+
+    client.tasks.push(task);
+    await client.save();
+
+    return res.status(200).json({ success : true, message: "Task added successfully", data : client });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success : false, message: "Internal server error" });
+  }
+};
+
+
+export const uploadCreditReport = async (req:any, res : any) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success : false, data : null, message: "No File Found" });
+    }
+    
+    const html = req.file.buffer.toString('utf8');
+    // const html = await fs.readFile(req.file.path, 'utf8');
+    const { clientId } = req.params;
+    
+    // Validate client ID
+    if (!mongoose.Types.ObjectId.isValid(clientId)) {
+      return res.status(400).json({ success : false, data : null,message: "Invalid client ID" });
+    }
+
+    // Validate HTML input
+    if (!html || typeof html !== "string") {
+      return res.status(400).json({success : false, data : null,  message: "HTML text is required" });
+    }
+    // Parse the credit report from HTML
+    const creditReport = parseCreditReport(html);
+    
+
+    // // Find the client and update their credit report
+    const client = await Client.findByIdAndUpdate(
+      clientId,
+      { $set: { creditReport } },
+      { new: true } // Return the updated document
+    );
+
+    if (!client) {
+      return res.status(404).json({ success : false, data : null,message: "Client not found" });
+    }
+
+    // Return the updated client with the new credit report
+    res.status(200).json({
+      success : true,
+      message: "Credit report updated successfully",
+      data : client,
+    });
+  } catch (error) {
+    console.error("Error updating credit report:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

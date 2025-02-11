@@ -63,7 +63,7 @@ const DisputeItemSchema = new Schema<DisputeItemDocument>({
     Experian: { type: BureauDetailsSchema },
     TransUnion: { type: BureauDetailsSchema },
   },
-  forClient: { type: Schema.Types.ObjectId, ref: "Client", required: true },
+  forClient: { type: Schema.Types.ObjectId, ref: "client", required: true },
 });
 
 const DisputeItem = mongoose.model<DisputeItemDocument>(

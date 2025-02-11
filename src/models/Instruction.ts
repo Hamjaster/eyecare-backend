@@ -6,7 +6,7 @@ export interface InstructionDocument extends Document {
 }
 
 const InstructionSchema = new Schema<InstructionDocument>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "user", required: true },
   instruction: { type: String, required: true },
 });
 

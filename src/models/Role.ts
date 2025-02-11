@@ -20,7 +20,7 @@ const RoleSchema = new Schema({
       actions: [{ type: String }], // e.g., ["Add", "Delete"]
     },
   ],
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "user", required: true },
   
 });
 

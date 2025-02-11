@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { UserDocument } from "./User";
+import { CreditReport } from "../config/config";
 
 export interface ClientDocument extends Document {
   firstName: string;
@@ -26,7 +27,12 @@ export interface ClientDocument extends Document {
   signature : {text:string, font : string, image : string};
   photoId ?: string;
   proofOfAddress ?: string;
+  tasks : string[],
+  note : string,
+  creditReport ?: CreditReport;
 }
+
+
 
 const ClientSchema = new Schema({
   firstName: { type: String, required: true },
@@ -40,9 +46,9 @@ const ClientSchema = new Schema({
     image : {type : String}
   },
   photoId : {type : String},
+  profilePhoto : {type : String},
   proofOfAddress : {type : String},
   last4SSN: { type: String },
-  profilePhoto: { type: String },
   dateOfBirth: { type: Date },
   mailingAddress: { type: String },
   country: { type: String },
@@ -54,9 +60,20 @@ const ClientSchema = new Schema({
   fax: { type: String },
   status: { type: String },
   startDate: { type: Date },
-  assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  referredBy: { type: Schema.Types.ObjectId, ref: "User" },
-  onBoardedBy: { type: Schema.Types.ObjectId, ref: "User" },
+  assignedTo: { type: Schema.Types.ObjectId, ref: "user", required: true },
+  referredBy: { type: Schema.Types.ObjectId, ref: "user" },
+  onBoardedBy: { type: Schema.Types.ObjectId, ref: "user" },
+  tasks : {type : Array},
+  note : {type : String},
+  creditReport : {
+    type: {
+      accounts: { type: Array },
+      creditScores: { type: Array },
+      creditDetails: { type: Object }
+    },
+    default: null // Set default value to null
+      
+  }
 });
 
-export default mongoose.model<ClientDocument>("Client", ClientSchema);
+export default mongoose.model<ClientDocument>("client", ClientSchema);
