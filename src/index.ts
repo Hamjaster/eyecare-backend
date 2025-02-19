@@ -7,6 +7,7 @@ import invoiceRoutes from "../src/routes/invoice.route";
 import creditorRoutes from "../src/routes/creditor.route";
 import companyRoutes from "../src/routes/company.route";
 import disputeRoutes from "../src/routes/dispute.route";
+import timelineRoutes from "../src/routes/timeline.route";
 import connectDB from "./config/db";
 import http from "http";
 import cors from "cors"; // Import the CORS middleware
@@ -27,6 +28,7 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/creditors", creditorRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/dispute", disputeRoutes);
+app.use("/api/timeline", timelineRoutes);
 
 app.get("/", (req, res) => {
   res.send("Express + TypeScript Server");

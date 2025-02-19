@@ -3,6 +3,7 @@ import express from "express";
 import {
   addTaskToClient,
   deleteClient,
+  getActivityData,
   getAllClients,
   getClientDetails,
   loginClient,
@@ -43,5 +44,6 @@ router.put("/changeEmail", protect, updateClientEmail);
 router.put("/changePassword", protect, updateClientPassword);
 router.put("/addTask", protect, addTaskToClient);
 router.post("/uploadCreditReport/:clientId", protect,upload.single('file'), uploadCreditReport);
+router.get('/activityData/:clientId',  getActivityData)
 
 export default router;
